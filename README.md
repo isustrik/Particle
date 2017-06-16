@@ -1,1 +1,2 @@
-# Particle Electron based Seacan Monitor
+# Particle Electron Based Sensors
+For monitoring remote facilities
