@@ -1,6 +1,5 @@
-// These #include statement were automatically added by the Particle IDE.
-#include <Ubidots.h>
-#include <Adafruit_DHT.h>
+#include <Ubidots.h> // This #include statement was automatically added by the Particle IDE.
+#include <Adafruit_DHT.h> // This #include statement was automatically added by the Particle IDE.
 
 #define DHTPIN D6     // what pin we're connected to
 #define LEDPIN D7
