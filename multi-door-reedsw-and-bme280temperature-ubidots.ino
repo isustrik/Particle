@@ -20,11 +20,11 @@ Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
 #define led_pin D7
 
-#define TOKEN "...."  // Pumphouse Specific Token
+#define TOKEN "...."  // Put your Specific Token Ubidots token here
 
 Ubidots ubidots(TOKEN);
 
-int doorPin[] = {C0,C1,C2}; //C0=Front Door; C1=Rear Door; C2=Side Door, etc
+int doorPin[] = {C0,C1}; //C0=Front Door; C1=Rear Door; etc
 int doorStatus[2]; //Is the door open, 1 = Open; 0 = Closed
 int pinCount = 2; //Number of door pins that are in use
 int counter = 0; //Counter for 1min readings
@@ -68,9 +68,9 @@ void setup() {
     float temp = bme.readTemperature(); //Reads in Celcius
     float pres = bme.readPressure()/1000; //Reads in kilo Pascals
     float hum = bme.readHumidity(); //Reads in %RH
-    ubidots.add("PH_Temp",temp);
-    ubidots.add("PH_Pressure",pres);
-    ubidots.add("PH_Humidity",hum);    
+    ubidots.add("Temp",temp);
+    ubidots.add("Pressure",pres);
+    ubidots.add("Humidity",hum);    
     ubidots.sendAll(); //Send all initialization data at once to the Ubidot Cloud
 }
 
@@ -141,9 +141,9 @@ void average() {
     tempavg = tempavg/uploadInterval;
     humavg = humavg/uploadInterval;
     presavg = presavg/uploadInterval;
-    ubidots.add("PH_Temp",tempavg);
-    ubidots.add("PH_Pressure",presavg);
-    ubidots.add("PH_Humidity",humavg);
+    ubidots.add("Temp",tempavg);
+    ubidots.add("Pressure",presavg);
+    ubidots.add("Humidity",humavg);
     ubidots.sendAll();
     avgcounter = 0; //Reset the average counter
     
