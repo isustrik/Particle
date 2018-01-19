@@ -29,8 +29,8 @@ Connect an HC-SR04 Range finder as follows:
 Spark   HC-SR04
 GND     GND
 5V      VCC
-D0     Trig
-D1      Echo
+D1     Trig
+D2      Echo
  
 The default usable rangefinder is 10cm to 250cm. Outside of that range -1 is returned as the distance.
  
