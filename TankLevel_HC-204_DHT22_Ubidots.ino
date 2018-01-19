@@ -7,7 +7,7 @@
 #define DHTTYPE DHT22
 #define trigPin D1
 #define echoPin D2
-#define TOKEN "TOKEN" //Enter your Ubidots Token here
+#define TOKEN "your token" //Your specific Ubitoken
 
 Ubidots ubidots(TOKEN);
 
@@ -18,8 +18,8 @@ double tank = 0.0;
 double temp = 0.0;
 double hum = 0.0;
 int uploadminutes = 5; //Number of minutes to average before uploading 0 to 60; if less frequent the two arrays following must be increased in kind
-float tempArray[60]; //Hold temperature in Celcius
-float humArray[60]; //Holds humidity in % Relative Humidity
+double tempArray[60]; //Hold temperature in Celcius
+double humArray[60]; //Holds humidity in % Relative Humidity
 int counter = 0;
 int avgcounter = 0; //Take the average Temperature and Humidity as well as a Water Tank Reading
 
@@ -46,8 +46,7 @@ void setup()
     Serial.begin(9600);
     dht.begin();
     delay(2000);
-    temp = dht.getTempCelcius(); //Reads in Celcius
-    hum = dht.getHumidity(); //Reads in %RH
+    initialize();
 }
  
 void loop() 
@@ -71,16 +70,18 @@ void environmentals() { //Environmental Data Function
 }
 
 void average() {
-    float tempavg = 0;
-    float humavg = 0;
+    double tempavg = 0;
+    double humavg = 0;
     for (int a = 0; a <= (uploadminutes - 1); a++){
         tempavg = tempArray[a] + tempavg;
         humavg = humArray[a] + humavg;
     }
-    tempavg = tempavg/uploadminutes;
-    humavg = humavg/uploadminutes;
+    tempavg = round((tempavg/uploadminutes)*100)/100;
+    humavg = round((humavg/uploadminutes)*100)/100;
     ubidots.add("WT_Temp",tempavg);
     ubidots.add("WT_Humidity",humavg);
+    Particle.variable("Temp", tempavg);
+    Particle.variable("Hum", humavg);
     watertank();  //Take a water tank reading
     ubidots.sendAll(); //Send all data at once to the Ubidot Cloud
     avgcounter = 0;
@@ -88,6 +89,7 @@ void average() {
 
 void watertank() {
     inches2water = rangefinder.getDistanceInch();
+    inches2water = round(inches2water*10)/10;
     if (inches2water < 11.0) {
         tank = 100.0;
     }
@@ -95,10 +97,21 @@ void watertank() {
             tank = 0.0;
         }
             else {
-                tank = 100-((inches2water/45)*100);
+                tank = round((100-((inches2water/45)*100))*10)/10;
             } 
     ubidots.add("WT_Tank",tank);
     ubidots.add("WT_Inches",inches2water);
     Particle.variable("Tank", tank);
     Particle.variable("I2W", inches2water);
+}
+
+void initialize() {
+    temp = round(dht.getTempCelcius()*100)/100; //Reads in Celcius
+    hum = round(dht.getHumidity()*100)/100; //Reads in %RH
+    Particle.variable("Temp", temp);
+    Particle.variable("Hum", hum);
+    ubidots.add("WT_Temp",temp);
+    ubidots.add("WT_Humidity",hum);
+    watertank();
+    ubidots.sendAll(); //Send all data at once to the Ubidot Cloud
 }
